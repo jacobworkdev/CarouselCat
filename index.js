@@ -23,6 +23,12 @@ const API_KEY =
  * This function should execute immediately.
  */
 async function initialLoad() {
+
+
+  // The fetch implementation---------------------------------------
+  // const req = await fetch("https://api.thecatapi.com/v1/breeds");
+  // const data = await req.json();
+
   const req = await axios.get("https://api.thecatapi.com/v1/breeds");
   const data = req.data;
 
@@ -57,10 +63,28 @@ breedSelect.addEventListener("change", async (e) => {
   let index = e.target.selectedIndex;
   let val = e.target.options[index].id;
   console.log(val);
+
+  // The fetch implementation---------------------------------------
+  // const fetching = await  fetch(
+  //   `https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${val}&api_key=${API_KEY}`
+  // );
+  // const req=await fetching.json()
+  // console.log(req[0].url);
+
+  // for (let i = 0; i < req.length; i++) {
+  //   let carItem = Carousel.createCarouselItem(req[i].url);
+
+  //   Carousel.appendCarousel(carItem);
+
+  // }
+  // Carousel.start()
+
+
   const req = await axios.get(
     `https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${val}&api_key=${API_KEY}`
   );
   console.log(req.data[0].url);
+
   for (let i = 0; i < req.data.length; i++) {
     let carItem = Carousel.createCarouselItem(req.data[i].url);
 
