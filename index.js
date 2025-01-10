@@ -141,6 +141,8 @@ breedSelect.addEventListener("change", async (e) => {
  */
 
 axios.interceptors.request.use((request) => {
+  document.body.style.cursor = 'progress'
+  progressBar.style.width = '0px'
   request.metadata = request.metadata || {};
   request.metadata.startTime = new Date().getTime();
   console.log('request sent')
@@ -152,7 +154,9 @@ axios.interceptors.request.use((request) => {
   })
 
 axios.interceptors.response.use((response) => {
+  document.body.style.cursor='default'
 
+  progressBar.style.width = '100%'
   response.config.metadata.endTime = new Date().getTime();
   response.config.metadata.durationInMS = response.config.metadata.endTime - response.config.metadata.startTime;
   console.log('response received and it took:', response.config.metadata.durationInMS, 'ms')
