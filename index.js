@@ -40,6 +40,13 @@ async function initialLoad() {
 
     breedSelect.appendChild(option);
   }
+  
+  //this code loads the first breed by default if the select dropdown has at least one item
+  if(breedSelect.firstChild){
+    breedSelect.selectedIndex=0
+    breedSelect.dispatchEvent(new Event('change'))
+  }
+
 }
 initialLoad();
 /**
@@ -58,6 +65,9 @@ initialLoad();
  */
 
 // https://api.thecatapi.com/v1/images/search?breed_ids=beng
+
+
+
 breedSelect.addEventListener("change", async (e) => {
   Carousel.clear();
   let index = e.target.selectedIndex;
@@ -79,6 +89,7 @@ breedSelect.addEventListener("change", async (e) => {
   // }
   // Carousel.start()
 
+  //axios implementation ------------------------------
 
   const req = await axios.get(
     `https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${val}&api_key=${API_KEY}`
