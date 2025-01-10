@@ -40,10 +40,10 @@ async function initialLoad() {
 
     breedSelect.appendChild(option);
   }
-  
+
   //this code loads the first breed by default if the select dropdown has at least one item
-  if(breedSelect.firstChild){
-    breedSelect.selectedIndex=0
+  if (breedSelect.firstChild) {
+    breedSelect.selectedIndex = 0
     breedSelect.dispatchEvent(new Event('change'))
   }
 
@@ -72,7 +72,7 @@ breedSelect.addEventListener("change", async (e) => {
   Carousel.clear();
   let index = e.target.selectedIndex;
   let val = e.target.options[index].id;
-  console.log(val);
+  console.log(val, '   ', index);
 
   // The fetch implementation---------------------------------------
   // const fetching = await  fetch(
@@ -94,6 +94,8 @@ breedSelect.addEventListener("change", async (e) => {
   const req = await axios.get(
     `https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${val}&api_key=${API_KEY}`
   );
+
+  console.log(req.data)
   console.log(req.data[0].url);
 
   for (let i = 0; i < req.data.length; i++) {
@@ -103,6 +105,16 @@ breedSelect.addEventListener("change", async (e) => {
 
   }
   Carousel.start()
+
+
+  try {
+    req.data[0].breeds[0].description
+    console.log('here is your data\n', req.data[0].breeds[0].description)
+    infoDump.innerText = req.data[0].breeds[0].description
+  } catch(e){
+    console.log(e)
+  }
+
 });
 
 /**
@@ -117,6 +129,9 @@ breedSelect.addEventListener("change", async (e) => {
  *   by setting a default header with your API key so that you do not have to
  *   send it manually with all of your requests! You can also set a default base URL!
  */
+
+// did the part 3 and for as comments as per instructoins from Joshua
+
 /**
  * 5. Add axios interceptors to log the time between request and response to the console.
  * - Hint: you already have access to code that does this!
