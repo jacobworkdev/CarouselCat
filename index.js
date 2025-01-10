@@ -1,5 +1,6 @@
-import * as Carousel from "./Carousel.js";
 // import axios from "axios";
+import * as Carousel from "./Carousel.js";
+
 
 // The breed selection input element.
 const breedSelect = document.getElementById("breedSelect");
@@ -99,19 +100,19 @@ breedSelect.addEventListener("change", async (e) => {
   console.log(req.data[0].url);
 
   for (let i = 0; i < req.data.length; i++) {
-    let carItem = Carousel.createCarouselItem(req.data[i].url);
+    let carItem = Carousel.createCarouselItem(req.data[i].url, ' cat', req.data[i].id);
 
     Carousel.appendCarousel(carItem);
 
   }
   Carousel.start()
 
-
+  //infodump implementation
   try {
     req.data[0].breeds[0].description
     console.log('here is your data\n', req.data[0].breeds[0].description)
     infoDump.innerText = req.data[0].breeds[0].description
-  } catch(e){
+  } catch (e) {
     console.log(e)
   }
 
@@ -130,7 +131,7 @@ breedSelect.addEventListener("change", async (e) => {
  *   send it manually with all of your requests! You can also set a default base URL!
  */
 
-// did the part 3 and for as comments as per instructoins from Joshua
+// did the part 3 and 4 as comments as per instructions from Joshua
 
 /**
  * 5. Add axios interceptors to log the time between request and response to the console.
@@ -138,6 +139,29 @@ breedSelect.addEventListener("change", async (e) => {
  * - Add a console.log statement to indicate when requests begin.
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
+
+axios.interceptors.request.use((request) => {
+  request.metadata = request.metadata || {};
+  request.metadata.startTime = new Date().getTime();
+  console.log('request sent')
+  return request //promise too
+},
+  (error) => {
+    console.log('request didnt send')
+    return Promise.reject(error)
+  })
+
+axios.interceptors.response.use((response) => {
+
+  response.config.metadata.endTime = new Date().getTime();
+  response.config.metadata.durationInMS = response.config.metadata.endTime - response.config.metadata.startTime;
+  console.log('response received and it took:', response.config.metadata.durationInMS, 'ms')
+  return response
+}, (error) => {
+  return Promise.reject(error)
+
+})
+
 
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
