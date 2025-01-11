@@ -1,4 +1,4 @@
-// import axios from "axios";
+
 import * as Carousel from "./Carousel.js";
 
 
@@ -30,9 +30,9 @@ async function initialLoad() {
   // const req = await fetch("https://api.thecatapi.com/v1/breeds");
   // const data = await req.json();
 
-  const req = await axios.get("https://api.thecatapi.com/v1/breeds");
+  const req = await axios.get("https://api.thecatapi.com/v1/breeds")
   const data = req.data;
-
+  // console.log(data)
   for (let i = 0; i < data.length; i++) {
     let option = document.createElement("OPTION");
     option.id = data[i].id;
@@ -96,11 +96,14 @@ breedSelect.addEventListener("change", async (e) => {
     `https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${val}&api_key=${API_KEY}`
   );
 
-  console.log(req.data)
-  console.log(req.data[0].url);
 
+
+  // console.log(req.data[0].url);
+  console.log('investigation',req.data[0])
+  console.log('investigation',req)
   for (let i = 0; i < req.data.length; i++) {
-    let carItem = Carousel.createCarouselItem(req.data[i].url, ' cat', req.data[i].id);
+    let carItem = Carousel.createCarouselItem(req.data[i].url, ' cat', req.data[i].id
+    );
 
     Carousel.appendCarousel(carItem);
 
@@ -110,9 +113,14 @@ breedSelect.addEventListener("change", async (e) => {
   //infodump implementation
   try {
     req.data[0].breeds[0].description
-    console.log('here is your data\n', req.data[0].breeds[0].description)
+    // console.log('here is your data\n', req.data[0].breeds[0].description)
     infoDump.innerText = req.data[0].breeds[0].description
   } catch (e) {
+
+
+    infoDump.innerText = 'Nothing on this breed Yet! OOPS SORRY'
+
+
     console.log(e)
   }
 
@@ -154,7 +162,7 @@ axios.interceptors.request.use((request) => {
   })
 
 axios.interceptors.response.use((response) => {
-  document.body.style.cursor='default'
+  document.body.style.cursor = 'default'
 
   progressBar.style.width = '100%'
   response.config.metadata.endTime = new Date().getTime();
@@ -199,9 +207,80 @@ axios.interceptors.response.use((response) => {
  *   you delete that favourite using the API, giving this function "toggle" functionality.
  * - You can call this function by clicking on the heart at the top right of any image.
  */
-export async function favourite(imgId) {
-  // your code here
+
+//https://api.thecatapi.com/v1/favourites
+const userId = "user312jacob"
+async function getLikedPics() {
+  const likedPicsReq = await axios(`https://api.thecatapi.com/v1/favourites?sub_id=user312jacob&api_key=${API_KEY}`).catch(e => {
+    console.log(e)
+  })
+  return likedPicsReq.data
+
 }
+
+console.log(getLikedPics())
+
+
+export async function favourite(imgId) {
+  const likedPics = await getLikedPics()
+  console.log('I am test', likedPics[0].image_id)
+  let isin = false
+  if (likedPics.length !== 0) {
+
+    for (let i = 0; i < likedPics.length; i++) {
+      if (likedPics[i].image_id == imgId) {
+        //000000000000000000000000
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("x-api-key", API_KEY);
+
+
+        var requestOptions = {
+          method: 'DELETE',
+          headers: myHeaders,
+          redirect: 'follow'
+        };
+
+        await fetch(`https://api.thecatapi.com/v1/favourites/${imgId}`, requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.log('error', error));
+
+        //000000000000000000000000
+        console.log('youlikedthisbefore')
+        isin = true
+        break
+      }
+    }
+
+
+  } if (!isin) {
+    var rawBody = JSON.stringify({
+      "image_id": imgId,
+      "sub_id": userId
+    });
+
+
+    const newFavourite = await fetch(
+      "https://api.thecatapi.com/v1/favourites",
+      {
+        method: 'POST',
+        headers: { "Content-Type": "application/json", 'x-api-key': API_KEY },
+        body: rawBody
+      }
+    ).then(() => {
+      console.log('successfully liked')
+    })
+      .catch(e => {
+        console.log(e)
+      })
+  }
+
+
+}
+console.log('here are your liked pics \n', await getLikedPics())
+
+
 
 /**
  * 9. Test your favourite() function by creating a getFavourites() function.
@@ -212,6 +291,27 @@ export async function favourite(imgId) {
  *    If that isn't in its own function, maybe it should be so you don't have to
  *    repeat yourself in this section.
  */
+
+getFavouritesBtn.addEventListener('click', getFavourites)
+
+async function getFavourites() {
+  Carousel.clear()
+
+
+  const data = await getLikedPics()
+  console.log(data)
+  // console.log(data)
+  for (let i = 0; i < data.length; i++) {
+    let carItem = Carousel.createCarouselItem(data[i].image.url, ' cat', data[i].id
+    );
+
+    Carousel.appendCarousel(carItem);
+
+  }
+  Carousel.start()
+
+  infoDump.innerText = 'These are the liked pictures!'
+}
 
 /**
  * 10. Test your site, thoroughly!
