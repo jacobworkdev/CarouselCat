@@ -99,8 +99,8 @@ breedSelect.addEventListener("change", async (e) => {
 
 
   // console.log(req.data[0].url);
-  console.log('investigation',req.data[0])
-  console.log('investigation',req)
+  console.log('investigation', req.data[0])
+  console.log('investigation', req)
   for (let i = 0; i < req.data.length; i++) {
     let carItem = Carousel.createCarouselItem(req.data[i].url, ' cat', req.data[i].id
     );
@@ -230,21 +230,14 @@ export async function favourite(imgId) {
     for (let i = 0; i < likedPics.length; i++) {
       if (likedPics[i].image_id == imgId) {
         //000000000000000000000000
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("x-api-key", API_KEY);
-
-
-        var requestOptions = {
-          method: 'DELETE',
-          headers: myHeaders,
-          redirect: 'follow'
-        };
-
-        await fetch(`https://api.thecatapi.com/v1/favourites/${likedPics[i].id}`, requestOptions)
-          .then(response => response.text())
+        //axios
+        await axios.delete(`https://api.thecatapi.com/v1/favourites/${likedPics[i].id}`, {
+          headers: { "x-api-key": API_KEY }
+        })
           .then(result => console.log(result))
           .catch(error => console.log('error', error));
+
+
 
         //000000000000000000000000
         console.log('youlikedthisbefore')
