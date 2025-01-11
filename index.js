@@ -220,10 +220,10 @@ async function getLikedPics() {
 
 console.log(getLikedPics())
 
-
+//use image id search for that image in the favourites url get back the one i liked
 export async function favourite(imgId) {
   const likedPics = await getLikedPics()
-  console.log('I am test', likedPics[0].image_id)
+  // console.log('I am test', likedPics[0].id)
   let isin = false
   if (likedPics.length !== 0) {
 
@@ -241,7 +241,7 @@ export async function favourite(imgId) {
           redirect: 'follow'
         };
 
-        await fetch(`https://api.thecatapi.com/v1/favourites/${imgId}`, requestOptions)
+        await fetch(`https://api.thecatapi.com/v1/favourites/${likedPics[i].id}`, requestOptions)
           .then(response => response.text())
           .then(result => console.log(result))
           .catch(error => console.log('error', error));
@@ -302,9 +302,9 @@ async function getFavourites() {
   console.log(data)
   // console.log(data)
   for (let i = 0; i < data.length; i++) {
-    let carItem = Carousel.createCarouselItem(data[i].image.url, ' cat', data[i].id
+    let carItem = Carousel.createCarouselItem(data[i].image.url, ' cat', data[i].image_id
     );
-
+    console.log(data[i].id)
     Carousel.appendCarousel(carItem);
 
   }
